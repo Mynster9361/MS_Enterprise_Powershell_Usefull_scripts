@@ -39,14 +39,14 @@ function Group-Manage {
 
         # Check if GroupMember is a valid user
         if ($Credential) {
-            $User = Get-ADUser -Identity $GroupMembers -Server $DomainController -Credential $Credential
+            $User = Get-ADUser -Identity ($GroupMembers -join "") -Server $DomainController -Credential $Credential
         }
         else {
-            $User = Get-ADUser -Identity $GroupMembers -Server $DomainController
+            $User = Get-ADUser -Identity ($GroupMembers -join "") -Server $DomainController
         }
         if ($null -eq $User) {
             Write-Error "GroupMember $GroupMembers is not a valid user"
-            return"GroupMember $GroupMember is not a valid user"
+            return "GroupMember $GroupMember is not a valid user"
         }
 
         # Check if GroupMember is already the owner
@@ -56,10 +56,10 @@ function Group-Manage {
 
         # Change the owner of the group
         if ($Credential) {
-            Set-ADGroup -Identity $GroupName -ManagedBy $GroupMembers -Server $DomainController -Credential $Credential
+            Set-ADGroup -Identity $GroupName -ManagedBy ($GroupMembers -join "") -Server $DomainController -Credential $Credential
         }
         else {
-            Set-ADGroup -Identity $GroupName -ManagedBy $GroupMembers -Server $DomainController
+            Set-ADGroup -Identity $GroupName -ManagedBy ($GroupMembers -join "") -Server $DomainController
         }
         return "GroupMember $GroupMembers is now the owner of $GroupName"
 
@@ -78,10 +78,10 @@ function Group-Manage {
     elseif ($GroupAction -eq "Remove") {
         # Remove members from the group
         if ($Credential) {
-            Remove-ADGroupMember -Identity $GroupName -Members $GroupMembers -Server $DomainController -Credential $Credential
+            Remove-ADGroupMember -Identity $GroupName -Members $GroupMembers -Confirm:$false -Server $DomainController -Credential $Credential
         }
         else {
-            Remove-ADGroupMember -Identity $GroupName -Members $GroupMembers -Server $DomainController
+            Remove-ADGroupMember -Identity $GroupName -Members $GroupMembers -Confirm:$false -Server $DomainController
         }
         return "GroupMember(s) $GroupMembers removed from $GroupName"
     }
